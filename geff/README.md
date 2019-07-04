@@ -43,6 +43,8 @@ netsh http add urlacl url=http://*:4118/ user=%USERNAME%
 
 5. Запустите geff.reg
 
-6. Скопируйте geff.py в папку C:\Program Files\Gtools
+6. Скопируйте geff.py в папку C:\Program Files\gtools
 
 7. Перезагрузите компьютер
+
+## Использование программы
