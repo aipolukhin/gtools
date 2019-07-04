@@ -7,7 +7,7 @@
 
 ! Установите программу [Micro-g LaCoste’s g Absolute Gravity Processing Software version g 9.0](http://microglacoste.com/product/micro-g-lacostes-g-absolute-gravity-processing-software/) с лицензионным ключом, если она не установлена.
 
-! Убедитесь. что у компьютера имеется доступ в интернет.
+! Убедитесь что у компьютера имеется доступ в интернет.
 
 1. Скачайте установочный файл [Miniconda2](https://repo.continuum.io/miniconda/Miniconda2-latest-Windows-x86_64.exe)
 и запустите его с правами Администратора. 
@@ -29,10 +29,7 @@ conda install -c synthicity prettytable -y
 
 3. Установите [CobraWinLDTP-4.0.0](https://pypi.org/project/CobraWinLDTP/)
 
-4. Для корректной работы пакета LDTP необходимо 
-отключить UAC, либо выполнить следующие действия:
-- Запустите cmd от имени администратора
-- Поочередно выполнить в окне cmd следующие команды:
+4. Для корректной работы пакета LDTP отключите UAC, либо запустите cmd от имени администратора и выполните следующие команды:
 
 ```
 set LDTP_LISTEN_ALL_INTERFACE=1
@@ -44,7 +41,7 @@ netsh http add urlacl url=http://+:4118/ user=%USERNAME%
 netsh http add urlacl url=http://*:4118/ user=%USERNAME%
 ```
 
-5. Запустить geff.reg
+5. Запустите geff.reg
 
 6. Скопируйте geff.py в папку C:\Program Files\Gtools
 
