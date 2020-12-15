@@ -110,7 +110,7 @@ def g9_proc(filename, vgrad):
     
     wdw = "*Micro-g*"
     results = {}
-
+    """
     frmSetup = 'frmSetup'
     frmETGTABSetup = 'frmETGTABSetup'
     frmOceanLoad = 'frmOceanLoad'
@@ -123,7 +123,7 @@ def g9_proc(filename, vgrad):
     frmOceanLoad = 'dlgOceanLoad'
     btnSetupOk = 'btnOK'
     frmOverrideDialog = 'dlgOverrideDialog'
-    """
+    
 
     wait(1)
 
