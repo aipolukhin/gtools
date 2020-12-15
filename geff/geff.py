@@ -282,7 +282,7 @@ def main():
     
         f.write("Azimuth Difference (N-S):  %.2f uGal" % az_diff)
 
-    for t_file in ["etgtab.out", "etgtab.prn", "ETCPOT.UTF"]:
+    for t_file in ["etgtab.out", "etgtab.prn", "ETCPOT.UFT"]:
         remove(t_file)
 
 if __name__ == "__main__":
