@@ -200,11 +200,13 @@ def g9_proc(filename, vgrad):
     wait(5)
 
     results["gravity"] = float(gettextvalue('frmState', 'txt42'))
-    results["sd"] = float(gettextvalue('frmState', 'txt43'))
+    results["SD"] = float(gettextvalue('frmState', 'txt43'))
     
     system("TASKKILL /F /IM g9.exe")
 
     #selectmenuitem(wdw, "mnuProject;mnuClose")
+    
+    results["SE"] = results["SD"] / np.sqrt(results["sets"])
     
     return results
 
@@ -214,9 +216,9 @@ def az_proc(project_azumuth, h_fact, h_mod, wzz):
     g_eff["h_eff"] = h_fact + g_eff["h_setup"] - h_mod
 
     with open(path.splitext(project_azumuth)[0] + ".project.txt", 'a') as f:
-        f.write(('\n\nReprocessing\nMJD:  {1}\nBulletin:  {2}		\nMeasurement Start:  {0}		\nGravity at Effective Height:  {3:.2f} \xb5Gal		\nStandard Deviation:  {4:.2f} \xb5Gal		\nEffective Height:  {5:.2f} cm		\nSetup Height:  {6:.2f} cm		\nHeight_mod:  {7:.2f} cm		\nFactory Height:  {8:.2f} cm').format(g_eff["iso"], 
+        f.write(('\n\nReprocessing\nMJD:  {1}\nBulletin:  {2}		\nMeasurement Start:  {0}		\nGravity at Effective Height:  {3:.2f} uGal		\nStandard Deviation:  {4:.2f} uGal		\nStandard Error:  {5:.2f} uGal		\nEffective Height:  {6:.2f} cm		\nSetup Height:  {7:.2f} cm		\nHeight_mod:  {8:.2f} cm		\nFactory Height:  {9:.2f} cm').format(g_eff["iso"], 
                 g_eff["mjd"], g_eff["bltn"], g_eff["gravity"],
-                g_eff["sd"], g_eff["h_eff"], g_eff["h_setup"],
+                g_eff["SD"], g_eff["SE"],  g_eff["h_eff"], g_eff["h_setup"],
                 h_mod, h_fact))
     return g_eff
 
@@ -241,7 +243,10 @@ def main():
     az_results["mean"] = {}
     for key in ["gravity", "h_setup", "h_eff"]:
         az_results["mean"][key] = np.mean([az_results["north"][key], az_results["south"][key]])
-    az_results["sd"] = np.sqrt(az_results["north"]["sd"]**2 + az_results["south"]["sd"]**2) / 2.0
+    
+    for key in ["SD", "SE"]:
+        az_results[key] = np.sqrt(az_results["north"][key]**2 + az_results["south"][key]**2) / 2.0
+    
     az_diff = az_results["north"]["gravity"] - az_results["south"]["gravity"]
     
     nt = Time.now()
@@ -250,30 +255,35 @@ def main():
         
     x = PrettyTable()
     x.field_names = ["Azimuth", "Start DateTime", "Sets", "Drops", 
-                         "g_eff", "sd", "h_setup"]
+                         "g_eff", "SD", "SE", "h_setup"]
     for az in ["north", "south"]:
         x.add_row([az, az_results[az]["iso"], str(az_results[az]["sets"]), 
                     az_results[az]["drops"], 
                     "{:.2f}".format(az_results[az]["gravity"]),
-                    "{:.2f}".format(az_results[az]["sd"]),
+                    "{:.2f}".format(az_results[az]["SD"]),
+                    "{:.2f}".format(az_results[az]["SE"]),
                     "{:.2f}".format(az_results[az]["h_setup"])])
         
     x.add_row(["result", "", "", "", 
                 "{:.2f}".format(az_results["mean"]["gravity"]), 
-                "{:.2f}".format(az_results["sd"]),
+                "{:.2f}".format(az_results["SD"]),
+                "{:.2f}".format(az_results["SE"]),
                 "{:.2f}".format(az_results["mean"]["h_setup"])])
         
     with open(path.join(path.split(project)[0], "report.txt"), "w") as f:
         f.write("Recalculation Report\n\n")
             
-        f.write(('Site Name:  {0}\nSite Code:  {1}\nCalculation Date:  {2}		\nGravity_eff:  {3:.2f} \xb5Gal		\nStandard Deviation:  {4:.2f} \xb5Gal		\nVertical Gradient:  {5:.2f} \xb5Gal/cm		\nEffective Height:  {6:.2f} cm		\nSetup Height:  {7:.2f} cm		\nHeight_mod:  {8:.2f} cm		\nFactory Height:  {9:.2f} cm\n\n').format(az_results["north"]["name"], 
+        f.write(('Site Name:  {0}\nSite Code:  {1}\nCalculation Date:  {2}		\nGravity_eff:  {3:.2f} uGal		\nStandard Deviation:  {4:.2f} uGal		\nStandard Error:  {5:.2f} uGal		\nVertical Gradient:  {6:.2f} uGal/cm		\nEffective Height:  {7:.2f} cm		\nSetup Height:  {8:.2f} cm		\nHeight_mod:  {9:.2f} cm		\nFactory Height:  {10:.2f} cm\n\n').format(az_results["north"]["name"], 
                     az_results["north"]["code"], nt.value, az_results["mean"]["gravity"],
-                    az_results["sd"], wzz, az_results["mean"]["h_eff"], 
+                    az_results["SD"], az_results["SE"], wzz, az_results["mean"]["h_eff"], 
                     az_results["mean"]["h_setup"], h_mod, h_fact))
    
         f.write(x.get_string() + "\n\n")
     
-        f.write("Azimuth Difference (N-S):  %.2f \xb5Gal" % az_diff)
+        f.write("Azimuth Difference (N-S):  %.2f uGal" % az_diff)
+
+    for t_file in ["etgtab.out", "etgtab.prn", "ETCPOT.UTF"]:
+        remove(t_file)
 
 if __name__ == "__main__":
     main()
